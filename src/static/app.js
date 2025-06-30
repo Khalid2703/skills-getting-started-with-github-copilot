@@ -14,21 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
       activitiesList.innerHTML = "";
 
       // Populate activities list
+      renderActivities(activities);
+
       Object.entries(activities).forEach(([name, details]) => {
-        const activityCard = document.createElement("div");
-        activityCard.className = "activity-card";
-
-        const spotsLeft = details.max_participants - details.participants.length;
-
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-        `;
-
-        activitiesList.appendChild(activityCard);
-
         // Add option to select dropdown
         const option = document.createElement("option");
         option.value = name;
@@ -39,6 +27,33 @@ document.addEventListener("DOMContentLoaded", () => {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
       console.error("Error fetching activities:", error);
     }
+  }
+
+  function renderActivities(activities) {
+    activitiesList.innerHTML = "";
+
+    Object.entries(activities).forEach(([name, activity]) => {
+      const card = document.createElement("div");
+      card.className = "activity-card";
+
+      card.innerHTML = `
+        <h4>${name}</h4>
+        <p><strong>Description:</strong> ${activity.description}</p>
+        <p><strong>Schedule:</strong> ${activity.schedule}</p>
+        <p><strong>Max Participants:</strong> ${activity.max_participants}</p>
+        <div class="participants-section">
+          <strong>Participants:</strong>
+          <ul class="participants-list">
+            ${activity.participants && activity.participants.length > 0
+              ? activity.participants.map(email => `<li>${email}</li>`).join("")
+              : "<li><em>No participants yet</em></li>"
+            }
+          </ul>
+        </div>
+      `;
+
+      activitiesList.appendChild(card);
+    });
   }
 
   // Handle form submission
